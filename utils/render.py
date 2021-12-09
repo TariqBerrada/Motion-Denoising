@@ -13,7 +13,10 @@ from body_visualizer.tools.vis_tools import show_image
 from human_body_prior.body_model.body_model import BodyModel
 from human_body_prior.tools.omni_tools import copy2cpu as c2c
 
+import matplotlib.pyplot as plt
+
 from os import path as osp
+
 
 support_dir = './support_data/'
 
@@ -55,6 +58,8 @@ def render_pose_sequence(poses, transl = None, betas = None, out_dir = 'renderin
     
     if betas is None:
         betas = torch.zeros(1, 16).float().to(device)
+
+    print(f"Rendering animation : {poses.shape[0]} frames - {fps} frames/sec. - resolution{size}")
     
     out = cv2.VideoWriter(out_dir,cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
 
@@ -65,6 +70,30 @@ def render_pose_sequence(poses, transl = None, betas = None, out_dir = 'renderin
         out.write(frame)
     out.release()
 
+def render_pose(poses, betas = None, out_dir = 'renderings/frame.jpg', resolution = 600, show = False):
+    if type(resolution) == int:
+        size = (resolution, resolution)
+        mv = MeshViewer(width=resolution, height=resolution, use_offscreen=True)
+    else:
+        size = (resolution[0], resolution[1])
+        mv = MeshViewer(width=resolution[0], height=resolution[1], use_offscreen=True)
+    
+    if betas is None:
+        bteas = torch.zeros(1, 16).float().to(device)
+    
+    anim = {'pose_body' : poses[[0], ...], 'betas' : betas}
+    body_pose_hand = bm(**anim)
+    frame = vis_body_pose_hand(mv, body_pose_hand)
+
+    plt.imsave(out_dir, frame)
+
+    if show:
+        plt.figure()
+        plt.imshow(frame)
+        plt.axis("off")
+        plt.show()
+
+    return frame
 
     
 if __name__ == '__main__':
@@ -82,5 +111,10 @@ if __name__ == '__main__':
         'dmpls': torch.Tensor(bdata['dmpls'][:, :num_dmpls]).to(device) # controls soft tissue dynamics
     }
 
-    render_pose_sequence(body_parms['pose_body'], body_parms['betas'])
+    # render_pose_sequence(body_parms['pose_body'], body_parms['betas'])
+    
 
+    T_pose  = torch.zeros(1, 63).float().to(device)
+
+    # render_pose(body_parms['pose_body'][[0], ...], resolution = (2560, 2560), show = True)
+    render_pose(T_pose, resolution = (2560, 2560), show = True)
