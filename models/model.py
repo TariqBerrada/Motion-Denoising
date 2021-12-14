@@ -1,0 +1,62 @@
+import torch
+import torch.nn.functional as F
+
+class Network(torch.nn.Module):
+    def __init__(self, input_dim, latent_dim):
+        super(Network, self).__init__()
+
+        self.latent_dim = latent_dim
+
+        # Encoder
+        self.fc1 = torch.nn.Linear(input_dim, 256)
+        self.fc2 = torch.nn.Linear(256, 512)
+        self.fc3 = torch.nn.Linear(512, 512)
+        self.fc4 = torch.nn.Linear(512, latent_dim*2)
+
+        # Decoder
+        self.dc1 = torch.nn.Linear(latent_dim, 256)
+        self.dc2 = torch.nn.Linear(256, 512)
+        self.dc3 = torch.nn.Linear(512, 512)
+        self.dc4 = torch.nn.Linear(512, input_dim)
+
+    def reparametrize(self, mu, logvar):
+        std = torch.exp(.5*logvar)
+        eps = torch.randn_like(std)
+        return mu + eps*std
+
+    def forward(self, x):
+        # Encode
+        x = F.leaky_relu(self.fc1(x))
+        x = F.leaky_relu(self.fc2(x))
+        x = F.leaky_relu(self.fc3(x))
+        x = self.fc4(x)
+
+        # get latent code params
+        mu, logvar = x.view(-1, 2, self.latent_dim)[:, 0, :], x.view(-1, 2, self.latent_dim)[:, 1, :]
+
+        # get latent code
+        z = self.reparametrize(mu, logvar)
+
+        # Decode
+        x = F.leaky_relu(self.dc1(z))
+        x = F.leaky_relu(self.dc2(x))
+        x = F.leaky_relu(self.dc3(x))
+        x = self.dc4(x)
+
+        return x, mu, logvar
+
+    def decode(self, z):
+        x = F.leaky_relu(self.dc1(z))
+        x = F.leaky_relu(self.dc2(x))
+        x = F.leaky_relu(self.dc3(x))
+        x = self.dc4(x)
+
+        return x
+
+if __name__ == '__main__':
+    model = Network(20, 2)
+
+    inp = torch.zeros(32, 20).float()
+    out, _, _ = model(inp)
+    
+    print(out.shape)
