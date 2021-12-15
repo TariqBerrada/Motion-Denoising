@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 epochs = 40
 lr = 1e-3
-train_split = .75
+train_split = .8
 batch_size = 64
 
 data = joblib.load('data/db/database.pt')
@@ -33,7 +33,7 @@ val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size)
 
 model = Network(156, 128).to(device)
 
-optimizer = torch.optim.Adadelta(model.parameters(), lr = lr)
+optimizer = torch.optim.Adam(model.parameters(), lr = lr)
 
 train_hist, val_hist = train(model, train_loader, val_loader, optimizer, epochs)
 

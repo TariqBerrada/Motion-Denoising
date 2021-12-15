@@ -97,24 +97,30 @@ def render_pose(poses, betas = None, out_dir = 'renderings/frame.jpg', resolutio
 
     
 if __name__ == '__main__':
-    amass_npz_fname = osp.join(support_dir, 'github_data/amass_sample.npz') # the path to body data
-    bdata = np.load(amass_npz_fname)
+    # amass_npz_fname = osp.join(support_dir, 'github_data/amass_sample.npz') # the path to body data
+    # bdata = np.load(amass_npz_fname)
 
-    time_length = len(bdata['trans'])
+    # time_length = len(bdata['trans'])
 
-    body_parms = {
-        'root_orient': torch.Tensor(bdata['poses'][:, :3]).to(device), # controls the global root orientation
-        'pose_body': torch.Tensor(bdata['poses'][:, 3:66]).to(device), # controls the body
-        'pose_hand': torch.Tensor(bdata['poses'][:, 66:]).to(device), # controls the finger articulation
-        'trans': torch.Tensor(bdata['trans']).to(device), # controls the global body position
-        'betas': torch.Tensor(np.repeat(bdata['betas'][:num_betas][np.newaxis], repeats=time_length, axis=0)).to(device), # controls the body shape. Body shape is static
-        'dmpls': torch.Tensor(bdata['dmpls'][:, :num_dmpls]).to(device) # controls soft tissue dynamics
-    }
+    # body_parms = {
+    #     'root_orient': torch.Tensor(bdata['poses'][:, :3]).to(device), # controls the global root orientation
+    #     'pose_body': torch.Tensor(bdata['poses'][:, 3:66]).to(device), # controls the body
+    #     'pose_hand': torch.Tensor(bdata['poses'][:, 66:]).to(device), # controls the finger articulation
+    #     'trans': torch.Tensor(bdata['trans']).to(device), # controls the global body position
+    #     'betas': torch.Tensor(np.repeat(bdata['betas'][:num_betas][np.newaxis], repeats=time_length, axis=0)).to(device), # controls the body shape. Body shape is static
+    #     'dmpls': torch.Tensor(bdata['dmpls'][:, :num_dmpls]).to(device) # controls soft tissue dynamics
+    # }
 
-    # render_pose_sequence(body_parms['pose_body'], body_parms['betas'])
+    # # render_pose_sequence(body_parms['pose_body'], body_parms['betas'])
     
 
-    T_pose  = torch.zeros(1, 63).float().to(device)
+    # T_pose  = torch.zeros(1, 63).float().to(device)
 
-    # render_pose(body_parms['pose_body'][[0], ...], resolution = (2560, 2560), show = True)
-    render_pose(T_pose, resolution = (2560, 2560), show = True)
+    # # render_pose(body_parms['pose_body'][[0], ...], resolution = (2560, 2560), show = True)
+    # render_pose(T_pose, resolution = (2560, 2560), show = True)
+
+    import joblib
+    data = joblib.load('data/db/database.pt')
+    pose = torch.tensor(data['pose'][[168], 3:66]).float().to(device)
+    print(pose.shape)
+    render_pose(pose, show = True)

@@ -12,6 +12,7 @@ def process_datasets(path):
 
     datasets = [os.path.join(path, x) for x in os.listdir(path)]
     for dataset in datasets:
+        print("Processing %s"%dataset)
         sequences = [os.path.join(dataset, x) for x in os.listdir(dataset)]
         for seq in sequences:
             files = [os.path.join(seq, x) for x in os.listdir(seq)]
