@@ -16,6 +16,8 @@ class Network(torch.nn.Module):
         self.fc6 = torch.nn.Linear(512, 512)
         self.fc7 = torch.nn.Linear(512, latent_dim*2)
 
+        self.res1 = torch.nn.Linear(512, 512)
+
         # Decoder
         self.dc1 = torch.nn.Linear(latent_dim, 256)
         self.dc2 = torch.nn.Linear(256, 512)
@@ -24,6 +26,8 @@ class Network(torch.nn.Module):
         self.dc5 = torch.nn.Linear(512, 512)
         self.dc6 = torch.nn.Linear(512, 512)
         self.dc7 = torch.nn.Linear(512, input_dim)
+
+        self.res2 = torch.nn.Linear(512, 512)
 
     def reparametrize(self, mu, logvar):
         std = torch.exp(.5*logvar)
@@ -35,9 +39,10 @@ class Network(torch.nn.Module):
         x = F.leaky_relu(self.fc1(x))
         x = F.leaky_relu(self.fc2(x))
         x = F.leaky_relu(self.fc3(x))
+        x0 = x
         x = F.leaky_relu(self.fc4(x))
         x = F.leaky_relu(self.fc5(x))
-        x = F.leaky_relu(self.fc6(x))
+        x = F.leaky_relu(self.fc6(x)) + x0
         x = self.fc7(x)
 
         # get latent code params
@@ -50,9 +55,10 @@ class Network(torch.nn.Module):
         x = F.leaky_relu(self.dc1(z))
         x = F.leaky_relu(self.dc2(x))
         x = F.leaky_relu(self.dc3(x))
+        x1 = x
         x = F.leaky_relu(self.dc4(x))
         x = F.leaky_relu(self.dc5(x))
-        x = F.leaky_relu(self.dc6(x))
+        x = F.leaky_relu(self.dc6(x)) + x1
         x = self.dc7(x)
 
         return x, mu, logvar
