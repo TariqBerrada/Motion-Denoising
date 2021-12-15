@@ -6,15 +6,13 @@ from models.model import Network
 
 import matplotlib.pyplot as plt
 
-model = Network(156, 128).to(device)
-model.load_state_dict(torch.load('weights/ckpt.pth'))
+model = Network(63, 50).to(device)
+model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
 
 data = joblib.load('data/db/database.pt')
 pose = torch.tensor(data['pose'][98:248, 3:66]).float().to(device)
-poseh = torch.tensor(data['pose'][98:248, :]).float().to(device)
 
-pred, _, _ = model(poseh)
-pred = pred[:, 3:66]
+pred, _, _ = model(pose)
 
 print(pose.shape, pred.shape)
 

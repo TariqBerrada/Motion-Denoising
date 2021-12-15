@@ -8,5 +8,5 @@ class DatasetClass(Dataset):
         return self.data['pose'].shape[0]
     
     def __getitem__(self, idx):
-        sample = {'pose': self.data['pose'][idx, :], 'trans': self.data['trans'][idx, :]}
+        sample = {'pose': self.data['pose'][idx, 3:66], 'trans': self.data['trans'][idx, :]}
         return sample

@@ -11,8 +11,8 @@ from utils.trainer import train
 
 import matplotlib.pyplot as plt
 
-epochs = 40
-lr = 1e-3
+epochs = 20
+lr = 1e-4
 train_split = .8
 batch_size = 64
 
@@ -31,7 +31,7 @@ val_data = {'pose':pose[sep:, :], 'trans':trans[sep:, :]}
 train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size)
 val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size)
 
-model = Network(156, 128).to(device)
+model = Network(63, 50).to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr = lr)
 
