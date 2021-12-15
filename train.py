@@ -28,14 +28,14 @@ sep = int(train_split*data['pose'].shape[0])
 train_data = {'pose':pose[:sep, :], 'trans':trans[:sep, :]}
 val_data = {'pose':pose[sep:, :], 'trans':trans[sep:, :]}
 
-train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size)
-val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size)
+train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size, num_workers=4)
+val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size, num_workers=4)
 
 model = Network(63, 50).to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr = lr)
-
-train_hist, val_hist = train(model, train_loader, val_loader, optimizer, epochs)
+scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, 1e-5, 1e-2)
+train_hist, val_hist = train(model, train_loader, val_loader, optimizer, scheduler, epochs)
 
 fig, ax = plt.subplots(1, 2, figsize = (12, 5))
 

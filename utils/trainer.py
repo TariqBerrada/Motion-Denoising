@@ -13,7 +13,7 @@ def VAELoss(data, target, mu, logvar, weight = 1.):
 
     return 1000*recloss + weight*KLdiv
 
-def fit(model, loader, optimizer):
+def fit(model, loader, optimizer, scheduler):
     model.train()
     
     running_loss = 0.0
@@ -29,6 +29,7 @@ def fit(model, loader, optimizer):
 
         loss.backward()
         optimizer.step()
+        scheduler.step()
     
     running_loss /= len(loader.dataset)
     return running_loss
@@ -50,11 +51,11 @@ def validate(model, loader):
     running_loss /= len(loader.dataset)
     return running_loss
 
-def train(model, train_loader, val_loader, optimizer, n_epochs, save_dir = "./weights"):
+def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_dir = "./weights"):
     train_hist, val_hist = [], []
     for epoch in tqdm.tqdm(range(n_epochs)):
         
-        tloss = fit(model, train_loader, optimizer)
+        tloss = fit(model, train_loader, optimizer, scheduler)
         vloss = validate(model, val_loader)
 
         train_hist.append(tloss)
