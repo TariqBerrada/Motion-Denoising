@@ -4,10 +4,14 @@ from config import device
 
 import matplotlib.pyplot as plt
 
+criterion = torch.nn.MSELoss()
+
 def VAELoss(data, target, mu, logvar, weight = 1.):
-    recloss = torch.nn.MSELoss()(data, target)
+
+    recloss = criterion(data, target)
     KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp())
-    return recloss + weight*KLdiv
+
+    return 10*recloss + weight*KLdiv
 
 def fit(model, loader, optimizer):
     model.train()
