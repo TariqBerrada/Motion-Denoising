@@ -1,5 +1,5 @@
 weights/*
 *.mp4
 notebooks/
-data/*
+data/
 *.pt
