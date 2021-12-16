@@ -12,9 +12,9 @@ from utils.trainer import train
 import matplotlib.pyplot as plt
 
 epochs = 100
-lr = 1e-3
+lr = 1e-4
 train_split = .8
-batch_size = 128
+batch_size = 512
 
 data = joblib.load('data/db/database.pt')
 
@@ -31,7 +31,7 @@ val_data = {'pose':pose[sep:, :], 'trans':trans[sep:, :]}
 train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size, num_workers=2)
 val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size, num_workers=2)
 
-model = Network(63, 50).to(device)
+model = Network(63, 28).to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr = lr)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5)
