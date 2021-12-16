@@ -29,7 +29,7 @@ def fit(model, loader, optimizer, scheduler):
 
         loss.backward()
         optimizer.step()
-        scheduler.step()
+        
     
     running_loss /= len(loader.dataset)
     return running_loss
@@ -57,6 +57,8 @@ def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_
         
         tloss = fit(model, train_loader, optimizer, scheduler)
         vloss = validate(model, val_loader)
+
+        scheduler.step(vloss)
 
         train_hist.append(tloss)
         val_hist.append(vloss)
