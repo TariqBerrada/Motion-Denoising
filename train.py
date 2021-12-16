@@ -11,7 +11,7 @@ from utils.trainer import train
 
 import matplotlib.pyplot as plt
 
-epochs = 100
+epochs = 500
 lr = 1e-4
 train_split = .8
 batch_size = 512
@@ -34,7 +34,7 @@ val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size, num_wor
 model = Network(63, 28).to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr = lr)
-scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5)
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5, patience = 40)
 train_hist, val_hist = train(model, train_loader, val_loader, optimizer, scheduler, epochs)
 
 fig, ax = plt.subplots(1, 2, figsize = (12, 5))
