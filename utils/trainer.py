@@ -58,7 +58,10 @@ def validate(model, loader):
 
     
     running_loss /= len(loader.dataset)
-    return running_loss
+    running_rec /= len(loader.dataset)
+    running_kl /= len(loader.dataset)
+    return running_loss, running_rec, running_kl
+
 
 def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_dir = "./weights"):
     train_hist, val_hist = [], []
