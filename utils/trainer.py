@@ -98,8 +98,8 @@ def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_
             ax[0][2].semilogy(train_kl)
             ax[0][2].set_title('train KL loss')
 
-            ax[1].semilogy(val_hist)
-            ax[1].set_title('validation loss')
+            ax[1][0].semilogy(val_hist)
+            ax[1][0].set_title('validation loss')
 
             ax[1][1].semilogy(val_rec)
             ax[1][1].set_title('validation reconstruction loss')
