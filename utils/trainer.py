@@ -10,12 +10,11 @@ criterion2 = torch.nn.MSELoss()
 
 def VAELoss(data, target, mu, logvar, weight = 1.):
 
-    data_J = get_joints(data)
-    target_J = get_joints(target)
+    data_J = get_joints(data).reshape(data.shape[0], -1)
+    target_J = get_joints(target).reshape(data.shape[0], -1)
 
     recloss = criterion(data, target)
     recloss2 = criterion(data_J, target_J)
-    print(recloss.norm(), recloss2.norm(), "norms")
     KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp())
 
     return 1000*recloss + recloss2 + 0.1*weight*KLdiv, 1000*recloss +recloss2, 0.1*weight*KLdiv
