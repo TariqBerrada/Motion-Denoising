@@ -11,7 +11,7 @@ def VAELoss(data, target, mu, logvar, weight = 1.):
     recloss = criterion(data, target)
     KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp())
 
-    return 1000*recloss + 0.01*weight*KLdiv
+    return 1000*recloss + 0.1*weight*KLdiv
 
 def fit(model, loader, optimizer, scheduler):
     model.train()

@@ -11,7 +11,7 @@ from utils.trainer import train
 
 import matplotlib.pyplot as plt
 
-epochs = 500
+epochs = 40
 lr = 1e-4
 train_split = .8
 batch_size = 512
