@@ -31,7 +31,7 @@ dmpl_fname = osp.join(support_dir, 'body_models/dmpls/{}/model.npz'.format(subje
 num_betas = 16 # number of body parameters
 num_dmpls = 8 # number of DMPL parameters
 
-bm = BodyModel(bm_path=bm_fname, num_betas=num_betas, num_dmpls=num_dmpls, path_dmpl=dmpl_fname).to(device)
+bm = BodyModel(bm_path=bm_fname, num_betas=num_betas, num_dmpls=None, path_dmpl=None).to(device)
 faces = c2c(bm.f)
 
 def vis_body_pose_hand(mv, body_pose_hand, fId = 0):
@@ -95,6 +95,26 @@ def render_pose(poses, betas = None, out_dir = 'renderings/frame.jpg', resolutio
 
     return frame
 
+
+def get_joints(poses, transl = None, betas = None):
+    """Renders an animation from a pose and translation sequence.
+
+    Args:
+        pose ([type]): [description]
+        transl ([type]): [description]
+        resolution (int, optional): [video resolution] : int 600 or tuple (768, 1024).
+    """
+    if betas is None:
+        betas = torch.zeros(poses.shape[0], 16).float().to(device)
+
+    
+    anim = {'pose_body':poses, 'betas' : betas}
+    body_pose_hand = bm(**anim)
+    joints = body_pose_hand.Jtr
+    return joints
+
+
+
     
 if __name__ == '__main__':
     # amass_npz_fname = osp.join(support_dir, 'github_data/amass_sample.npz') # the path to body data
@@ -121,6 +141,7 @@ if __name__ == '__main__':
 
     import joblib
     data = joblib.load('data/db/database.pt')
-    pose = torch.tensor(data['pose'][[168], 3:66]).float().to(device)
-    print(pose.shape)
-    render_pose(pose, show = True)
+    pose = torch.tensor(data['pose'][168:175, 3:66]).float().to(device)
+    # print(pose.shape)
+    # render_pose(pose, show = True)
+    get_joints(pose)

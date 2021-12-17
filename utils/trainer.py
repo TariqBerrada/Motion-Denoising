@@ -1,17 +1,24 @@
 import torch, tqdm, os
 
 from config import device
+from utils.render import get_joints
 
 import matplotlib.pyplot as plt
 
 criterion = torch.nn.MSELoss()
+criterion2 = torch.nn.MSELoss()
 
 def VAELoss(data, target, mu, logvar, weight = 1.):
 
+    data_J = get_joints(data)
+    target_J = get_joints(target)
+
     recloss = criterion(data, target)
+    recloss2 = criterion(data_J, target_J)
+    print(recloss.norm(), recloss2.norm(), "norms")
     KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp())
 
-    return 1000*recloss + 0.1*weight*KLdiv, 1000*recloss, 0.1*weight*KLdiv
+    return 1000*recloss + recloss2 + 0.1*weight*KLdiv, 1000*recloss +recloss2, 0.1*weight*KLdiv
 
 def fit(model, loader, optimizer, scheduler):
     model.train()
@@ -87,7 +94,7 @@ def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_
         if epoch%5 == 0:
             torch.save(model.state_dict(), os.path.join(save_dir, "ckpt.pth"))
     
-            fig, ax = plt.subplots(2, 3, figsize = (18, 5))
+            fig, ax = plt.subplots(2, 3, figsize = (23, 10))
 
             ax[0][0].semilogy(train_hist)
             ax[0][0].set_title('train loss')
@@ -106,7 +113,6 @@ def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_
 
             ax[1][2].semilogy(val_kl)
             ax[1][2].set_title('validation KL loss')
-
 
             plt.savefig('learning.jpg')
             plt.close()
