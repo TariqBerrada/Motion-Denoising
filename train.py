@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 epochs = 40
 lr = 1e-3
 train_split = .8
-batch_size = 512
+batch_size = 32
 
 data = joblib.load('data/db/database.pt')
 
@@ -32,6 +32,7 @@ train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size, num
 val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size, num_workers=2)
 
 model = Network(63, 28).to(device)
+model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
 
 optimizer = torch.optim.SGD(model.parameters(), lr = lr)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5, patience = 40)

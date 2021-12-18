@@ -26,7 +26,7 @@ def fit(model, loader, optimizer, scheduler):
     running_rec = 0.0
     running_kl = 0.0
 
-    for i, data in enumerate(loader):
+    for i, data in tqdm.tqdm(enumerate(loader)):
         pose = data['pose'].float().to(device)
 
         optimizer.zero_grad()
