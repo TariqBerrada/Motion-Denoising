@@ -15,24 +15,25 @@ pose = torch.tensor(data['pose'][98:248, 3:66]).float().to(device)
 
 pred, _, _ = model(pose)
 
-# # print(pose.shape, pred.shape)
-# print('Running reconstruction test.')
+# print(pose.shape, pred.shape)
+print('Running reconstruction test.')
 
-# render_pose_sequence(pose, fps = 120, out_dir="renderings/gt.mp4")
-# render_pose_sequence(pred, fps = 120, out_dir="renderings/pred.mp4")
+render_pose_sequence(pose, fps = 120, out_dir="renderings/gt.mp4")
+render_pose_sequence(pred, fps = 120, out_dir="renderings/pred.mp4")
 
-# print('Running interpolation test.')
+print('Running interpolation test.')
 
-# pose0 = torch.tensor(data['pose'][[102300], 3:66]).float().to(device)
-# pose1 = torch.tensor(data['pose'][[1600], 3:66]).float().to(device)
+pose0 = torch.tensor(data['pose'][[102300], 3:66]).float().to(device)
+pose1 = torch.tensor(data['pose'][[1600], 3:66]).float().to(device)
 
-# sequence = torch.cat([w*pose0 + (1-w)*pose1 for w in np.linspace(0, 1, 150)])
-# print('sequence', sequence.shape)
+sequence = torch.cat([w*pose0 + (1-w)*pose1 for w in np.linspace(0, 1, 150)])
+print('sequence', sequence.shape)
+sequence_p, _, _ = model(sequence)
+render_pose(pose0, out_dir = 'renderings/pose0.jpg')
+render_pose(pose1, out_dir = 'renderings/pose1.jpg')
 
-# render_pose(pose0, out_dir = 'renderings/pose0.jpg')
-# render_pose(pose1, out_dir = 'renderings/pose1.jpg')
-
-# render_pose_sequence(sequence, fps = 120, out_dir="renderings/interpolation.mp4")
+render_pose_sequence(sequence, fps = 60, out_dir="renderings/interpolation_gt.mp4")
+render_pose_sequence(sequence_p, fps = 60, out_dir="renderings/interpolation_p.mp4")
 
 def pred_set(nx=4, ny = 4):
     n = nx*ny
