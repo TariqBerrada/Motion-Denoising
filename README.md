@@ -6,3 +6,6 @@ Denoising of 3D human motion animations by latent space projection.
 - [X] Data processing utilities.
 - [X] Basic VAE model.
 - [ ] Projection paths analysis.
+
+## Current results
+![left = ground truth, right = reconstruction](renderings/preds.jpg)
