@@ -31,8 +31,8 @@ dmpl_fname = osp.join(support_dir, 'body_models/dmpls/{}/model.npz'.format(subje
 num_betas = 16 # number of body parameters
 num_dmpls = 8 # number of DMPL parameters
 
-bm = BodyModel(bm_path=bm_fname, num_betas=num_betas, num_dmpls=None, path_dmpl=None).to(device)
-# bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas, num_dmpls=None, dmpl_fname=None).to(device)
+# bm = BodyModel(bm_path=bm_fname, num_betas=num_betas, num_dmpls=None, path_dmpl=None).to(device)
+bm = BodyModel(bm_fname=bm_fname, num_betas=num_betas, num_dmpls=None, dmpl_fname=None).to(device)
 
 faces = c2c(bm.f)
 
