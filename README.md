@@ -8,4 +8,8 @@ Denoising of 3D human motion animations by latent space projection.
 - [ ] Projection paths analysis.
 
 ## Current results
-![left = ground truth, right = reconstruction](renderings/preds.jpg)
+The following is the learning curve, the image to the right is the rendering of the ground truth while the left one is the reconstruction.
+!['left = ground truth, right = reconstruction'](renderings/preds.jpg)
+
+Learning curves (the total loss, reconstruction part and KL diverence part are all plotted).
+![learning curves](learning.png)
