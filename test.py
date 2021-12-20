@@ -8,10 +8,10 @@ from models.model import Network
 import matplotlib.pyplot as plt
 
 model = Network(63, 28).to(device)
-model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
+model.load_state_dict(torch.load('weights/ckpt(2).pth', map_location = 'cpu'))
 
 data = joblib.load('data/db/database.pt')
-pose = torch.tensor(data['pose'][98:248, 3:66]).float().to(device)
+pose = torch.tensor(data['pose'][98:148, 3:66]).float().to(device)
 
 pred, _, _ = model(pose)
 
