@@ -34,7 +34,9 @@ val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size, num_wor
 model = Network(63, 28).to(device)
 model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
 
-optimizer = torch.optim.SGD(model.parameters(), lr = lr)
+# optimizer = torch.optim.SGD(model.parameters(), lr = lr)
+
+optimizer = torch.optim.LBFGS(model.parameters(), lr = lr, max_iter = 50, line_search_fn='strong_wolfe')
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5, patience = 40)
 train_hist, val_hist = train(model, train_loader, val_loader, optimizer, scheduler, epochs)
 

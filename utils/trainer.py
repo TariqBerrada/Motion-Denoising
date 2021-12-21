@@ -27,9 +27,9 @@ def VAELoss(data, target, mu, logvar, weight = 1.):
 
     recloss = criterion(data, target)
     recloss2 = criterion(data_J, target_J)
-    KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp())
+    KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp(), dim = 1)
 
-    return 1000*recloss + recloss2 + 0.01*weight*KLdiv, 1000*recloss +recloss2, 0.1*weight*KLdiv
+    return 1000*recloss + recloss2 + 0.01*weight*KLdiv.mean(), 1000*recloss +recloss2, 0.1*weight*KLdiv.mean()
 
 def fit(model, loader, optimizer, scheduler):
     model.train()
@@ -39,23 +39,26 @@ def fit(model, loader, optimizer, scheduler):
     running_kl = 0.0
 
     for i, data in enumerate(loader):
-        pose = data['pose'].float().to(device)
+        def closure():
+            optimizer.zero_grad()
 
-        optimizer.zero_grad()
-        reconstruction, mu, logvar = model(pose)
+            pose = data['pose'].float().to(device)
+            reconstruction, mu, logvar = model(pose)
 
-        loss, rec, kl = VAELoss(pose, reconstruction, mu, logvar)
+            loss, rec, kl = VAELoss(pose, reconstruction, mu, logvar)
 
-        gloss = GradLoss(model, reconstruction, pose)
-        print(loss.item(), gloss.item())
-        loss  = loss + gloss
+            gloss = GradLoss(model, reconstruction, pose)
+            
+            loss  = loss + 1000*gloss
 
-        running_loss += loss.item()
-        running_rec += rec.item()
-        running_kl += kl.item()
+            running_loss += loss.item()
+            running_rec += rec.item()
+            running_kl += kl.item()
 
-        loss.backward()
-        optimizer.step()
+            loss.backward()
+            return loss
+
+        optimizer.step(closure)
         
     
     running_loss /= len(loader.dataset)
