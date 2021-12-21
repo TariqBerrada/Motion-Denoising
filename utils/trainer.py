@@ -51,9 +51,9 @@ def fit(model, loader, optimizer, scheduler):
             
             loss  = loss + 1000*gloss
 
-            running_loss += loss.item()
-            running_rec += rec.item()
-            running_kl += kl.item()
+            # running_loss += loss.item()
+            # running_rec += rec.item()
+            # running_kl += kl.item()
 
             loss.backward()
             return loss
