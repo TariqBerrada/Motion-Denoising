@@ -119,11 +119,11 @@ class CosNetwork(torch.nn.Module):
         x = F.leaky_relu(self.fc2(x))
         x = F.leaky_relu(self.fc3(x))
         x0 = x
-        x = torch.cos(F.leaky_relu(self.fc4(x))) + x0
+        x = F.leaky_relu(self.fc4(x)) + x0
         x1 = x
-        x = torch.cos(F.leaky_relu(self.fc5(x))) + x1
+        x = F.leaky_relu(self.fc5(x)) + x1
         x2 = x
-        x = torch.cos(F.leaky_relu(self.fc6(x))) + x2
+        x = F.leaky_relu(self.fc6(x)) + x2
         x = self.fc7(x)
 
         # get latent code params
@@ -137,9 +137,9 @@ class CosNetwork(torch.nn.Module):
         x = F.leaky_relu(self.dc2(x))
         x = F.leaky_relu(self.dc3(x))
         x3 = x
-        x = torch.cos(F.leaky_relu(self.dc4(x))) + x3
+        x = F.leaky_relu(self.dc4(x)) + x3
         x4 = x 
-        x = torch.cos(F.leaky_relu(self.dc5(x))) + x4
+        x = F.leaky_relu(self.dc5(x)) + x4
         x5 = x
         x = torch.cos(F.leaky_relu(self.dc6(x))) + x5
         x = self.dc7(x)
@@ -152,9 +152,9 @@ class CosNetwork(torch.nn.Module):
         x = F.leaky_relu(self.dc2(x))
         x = F.leaky_relu(self.dc3(x))
         x3 = x
-        x = torch.cos(F.leaky_relu(self.dc4(x))) + x3
+        x = F.leaky_relu(self.dc4(x)) + x3
         x4 = x 
-        x = torch.cos(F.leaky_relu(self.dc5(x))) + x4
+        x = F.leaky_relu(self.dc5(x)) + x4
         x5 = x
         x = torch.cos(F.leaky_relu(self.dc6(x))) + x5
         x = self.dc7(x)
