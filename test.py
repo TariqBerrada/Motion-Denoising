@@ -8,7 +8,7 @@ from models.model import Network
 import matplotlib.pyplot as plt
 
 model = Network(63, 28).to(device)
-model.load_state_dict(torch.load('weights/ckpt(2).pth', map_location = 'cpu'))
+model.load_state_dict(torch.load('weights/cafe2.pth', map_location = 'cpu'))
 
 data = joblib.load('data/db/database.pt')
 pose = torch.tensor(data['pose'][98:248, 3:66]).float().to(device)
@@ -23,17 +23,17 @@ render_pose_sequence(pred, fps = 120, out_dir="renderings/pred.mp4")
 
 print('Running interpolation test.')
 
-pose0 = torch.tensor(data['pose'][[102300], 3:66]).float().to(device)
+pose0 = torch.tensor(data['pose'][[105300], 3:66]).float().to(device)
 pose1 = torch.tensor(data['pose'][[1600], 3:66]).float().to(device)
 
-sequence = torch.cat([w*pose0 + (1-w)*pose1 for w in np.linspace(0, 1, 150)])
+sequence = torch.cat([w*pose0 + (1-w)*pose1 for w in np.linspace(0, 1, 250)])
 sequence_p, _, _ = model(sequence)
 
 render_pose(pose0, out_dir = 'renderings/pose0.jpg')
 render_pose(pose1, out_dir = 'renderings/pose1.jpg')
 
-render_pose_sequence(sequence, fps = 60, out_dir="renderings/interpolation_gt.mp4")
-render_pose_sequence(sequence_p, fps = 60, out_dir="renderings/interpolation_p.mp4")
+render_pose_sequence(sequence, fps = 120, out_dir="renderings/interpolation_gt.mp4")
+render_pose_sequence(sequence_p, fps = 120, out_dir="renderings/interpolation_p.mp4")
 
 def pred_set(nx=4, ny = 4):
     n = nx*ny

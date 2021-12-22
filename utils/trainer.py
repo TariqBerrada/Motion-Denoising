@@ -39,26 +39,26 @@ def fit(model, loader, optimizer, scheduler):
     running_kl = 0.0
 
     for i, data in enumerate(loader):
-        def closure():
-            optimizer.zero_grad()
+        
+        optimizer.zero_grad()
 
-            pose = data['pose'].float().to(device)
-            reconstruction, mu, logvar = model(pose)
+        pose = data['pose'].float().to(device)
+        reconstruction, mu, logvar = model(pose)
 
-            loss, rec, kl = VAELoss(pose, reconstruction, mu, logvar)
+        loss, rec, kl = VAELoss(pose, reconstruction, mu, logvar)
 
-            gloss = GradLoss(model, reconstruction, pose)
-            
-            loss  = loss + 1000*gloss
+        gloss = GradLoss(model, reconstruction, pose)
+        
+        loss  = loss + 1000*gloss
 
-            # running_loss += loss.item()
-            # running_rec += rec.item()
-            # running_kl += kl.item()
+        running_loss += loss.item()
+        running_rec += rec.item()
+        running_kl += kl.item()
 
-            loss.backward()
-            return loss
+        loss.backward()
+        
 
-        optimizer.step(closure)
+        optimizer.step()
         
     
     running_loss /= len(loader.dataset)
