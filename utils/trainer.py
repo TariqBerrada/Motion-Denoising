@@ -7,6 +7,18 @@ import matplotlib.pyplot as plt
 
 criterion = torch.nn.MSELoss()
 criterion2 = torch.nn.MSELoss()
+criterion_grad = torch.nn.MSELoss()
+
+def GradLoss(model, data, target, eps = 0.1):
+    directions = torch.rand_like(data).float().to(device)
+    pred_p, _, _ = model(target + eps*directions)
+    pred_m, _, _ = model(target - eps*directions)
+
+    grad_p = torch.abs(pred_p - data)
+    grad_m = torch.abs(pred_m - data)
+
+    return criterion_grad(grad_p, grad_m)
+
 
 def VAELoss(data, target, mu, logvar, weight = 1.):
 
@@ -15,9 +27,9 @@ def VAELoss(data, target, mu, logvar, weight = 1.):
 
     recloss = criterion(data, target)
     recloss2 = criterion(data_J, target_J)
-    KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp())
+    KLdiv = -0.5*torch.sum(1+logvar - mu.pow(2) - logvar.exp(), dim = 1)
 
-    return 1000*recloss + recloss2 + 0.01*weight*KLdiv, 1000*recloss +recloss2, 0.1*weight*KLdiv
+    return 1000*recloss + recloss2 + 0.01*weight*KLdiv.mean(), 1000*recloss +recloss2, 0.1*weight*KLdiv.mean()
 
 def fit(model, loader, optimizer, scheduler):
     model.train()
@@ -27,17 +39,25 @@ def fit(model, loader, optimizer, scheduler):
     running_kl = 0.0
 
     for i, data in enumerate(loader):
-        pose = data['pose'].float().to(device)
-
+        
         optimizer.zero_grad()
+
+        pose = data['pose'].float().to(device)
         reconstruction, mu, logvar = model(pose)
 
         loss, rec, kl = VAELoss(pose, reconstruction, mu, logvar)
+
+        gloss = GradLoss(model, reconstruction, pose)
+        
+        loss  = loss + 1000*gloss
+
         running_loss += loss.item()
         running_rec += rec.item()
         running_kl += kl.item()
 
         loss.backward()
+        
+
         optimizer.step()
         
     

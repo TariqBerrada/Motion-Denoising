@@ -13,14 +13,14 @@ from body_visualizer.tools.vis_tools import show_image
 from human_body_prior.body_model.body_model import BodyModel
 from human_body_prior.tools.omni_tools import copy2cpu as c2c
 
+from config import device
+
 import matplotlib.pyplot as plt
 
 from os import path as osp
 
 
 support_dir = './support_data/'
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 subject_gender = 'male'
 
@@ -145,5 +145,5 @@ if __name__ == '__main__':
     data = joblib.load('data/db/database.pt')
     pose = torch.tensor(data['pose'][168:175, 3:66]).float().to(device)
     # print(pose.shape)
-    # render_pose(pose, show = True)
-    get_joints(pose)
+    render_pose(pose, show = True)
+    # get_joints(pose)
