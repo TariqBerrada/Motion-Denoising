@@ -8,6 +8,7 @@ Denoising of 3D human motion animations by latent space projection.
 - [X] Projection paths analysis.
 - [X] Denoising by gradient descent.
 - [X] Denoising by Interpolation.
+- [ ] Neural ODEs for denoising.
 
 ## Current results
 The following is the learning curve, the image to the right is the rendering of the ground truth while the left one is the reconstruction.
