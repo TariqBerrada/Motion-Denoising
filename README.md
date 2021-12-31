@@ -15,3 +15,12 @@ The following is the learning curve, the image to the right is the rendering of 
 
 Learning curves (the total loss, reconstruction part and KL diverence part are all plotted).
 ![learning curves](learning.png)
+
+## Phase diagrams and correspondances in 2d t-SNE embedding space (example)
+![](renderings/tsne.png)
+
+## Interpolation profil in 2D t-SNE space (example)
+![](renderings/tsne_interpolation.png)
+
+## Interpolation for denoising
+![](renderings/interpolation.png)
