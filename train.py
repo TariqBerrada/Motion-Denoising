@@ -31,7 +31,7 @@ val_data = {'pose':pose[sep:, :], 'trans':trans[sep:, :]}
 train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size, num_workers=2)
 val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size, num_workers=2)
 
-model = CosNetwork(63, 28).to(device)
+model = Network(63, 28).to(device)
 model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
 
 optimizer = torch.optim.SGD(model.parameters(), lr = lr)

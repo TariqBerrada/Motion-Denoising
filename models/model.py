@@ -80,7 +80,22 @@ class Network(torch.nn.Module):
 
         return x
 
+    def encode(self, x):
+        # Encode
+        x = F.leaky_relu(self.fc1(x))
+        x = F.leaky_relu(self.fc2(x))
+        x = F.leaky_relu(self.fc3(x))
+        x0 = x
+        x = F.leaky_relu(self.fc4(x)) + x0
+        x1 = x
+        x = F.leaky_relu(self.fc5(x)) + x1
+        x2 = x
+        x = F.leaky_relu(self.fc6(x)) + x2
+        x = self.fc7(x)
 
+        # get latent code params
+        mu, logvar = x.view(-1, 2, self.latent_dim)[:, 0, :], x.view(-1, 2, self.latent_dim)[:, 1, :]
+        return mu, logvar
 
 class CosNetwork(torch.nn.Module):
     def __init__(self, input_dim, latent_dim):
