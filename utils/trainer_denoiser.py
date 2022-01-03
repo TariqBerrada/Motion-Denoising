@@ -63,7 +63,7 @@ def validate(model, loader):
 def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_dir = "./weights"):
     train_hist, val_hist = [], []
     
-    for epoch in tqdm.tqdm(range(n_epochs)):
+    for epoch in tqdm.tqdm_notebook(range(n_epochs)):
         
         tloss = fit(model, train_loader, optimizer, scheduler)
         vloss = validate(model, val_loader)

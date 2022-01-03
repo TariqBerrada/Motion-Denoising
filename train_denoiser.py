@@ -15,6 +15,7 @@ epochs = 50
 lr = 1e-3
 train_split = .8
 batch_size = 1024
+seqlen=60
 
 data = joblib.load('data/db/database.pt')
 
@@ -26,8 +27,8 @@ sep = int(train_split*data['pose'].shape[0])
 train_data = {'pose':pose[:sep, :], 'trans':trans[:sep, :]}
 val_data = {'pose':pose[sep:, :], 'trans':trans[sep:, :]}
 
-train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size, num_workers=2)
-val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size, num_workers=2)
+train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size*seqlen, num_workers=2)
+val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size*seqlen, num_workers=2)
 
 model = Denoiser(input_dim = 63, batch_size = batch_size, hidden_dim = 256, seqlen=60, n_layers= 3).to(device)
 # model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
