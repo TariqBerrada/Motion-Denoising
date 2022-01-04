@@ -6,6 +6,7 @@ from utils.render import get_joints
 import matplotlib.pyplot as plt
 
 criterion = torch.nn.MSELoss()
+criterion2 = torch.nn.MSELoss()
 
 batch_size = 256
 seqlen = 60
@@ -24,11 +25,17 @@ def fit(model, loader, optimizer, scheduler):
         noise =  torch.normal(0, 0.03, size = pose.shape, device = pose.device, dtype = torch.float32)
         reconstruction = model(pose+noise)
 
-        loss =criterion(pose, reconstruction)
+        loss_pose =criterion(pose, reconstruction)
 
+        pose_J = get_joints(pose)
+        reconstruction_J = get_joints(reconstruction)
+
+        loss_jts = criterion2(pose_J, reconstruction_J)
         # gloss = GradLoss(model, reconstruction, pose)
         
         # loss  = loss + 1000*gloss
+        loss = loss_pose + loss_jts
+        print(loss_pose.item(), loss_jts.item())
 
         running_loss += loss.item()
 
