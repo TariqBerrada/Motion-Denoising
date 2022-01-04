@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 criterion = torch.nn.MSELoss()
 
-batch_size = 1024
+batch_size = 256
 seqlen = 60
 
 def fit(model, loader, optimizer, scheduler):
@@ -80,12 +80,11 @@ def train(model, train_loader, val_loader, optimizer, scheduler, n_epochs, save_
     
             fig, ax = plt.subplots(2, 1, figsize = (23, 10))
 
-            ax[0][0].semilogy(train_hist)
-            ax[0][0].set_title('train loss')
+            ax[0].semilogy(train_hist)
+            ax[0].set_title('train loss')
 
-            ax[1][0].semilogy(val_hist)
-            ax[1][0].set_title('validation loss')
-
+            ax[1].semilogy(val_hist)
+            ax[1].set_title('validation loss')
 
             plt.savefig('learning.jpg')
             plt.close()
