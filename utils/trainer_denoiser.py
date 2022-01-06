@@ -3,13 +3,15 @@ import torch, tqdm, os
 from config import device
 from utils.render import get_joints
 
+from train_denoiser import batch_size, seqlen
+
 import matplotlib.pyplot as plt
 
 criterion = torch.nn.MSELoss()
 criterion2 = torch.nn.MSELoss()
 
-batch_size = 256
-seqlen = 60
+# batch_size = 256
+# seqlen = 60
 
 def fit(model, loader, optimizer, scheduler):
     model.train()
@@ -27,8 +29,8 @@ def fit(model, loader, optimizer, scheduler):
 
         loss_pose =criterion(pose, reconstruction)
 
-        pose_J = get_joints(pose)
-        reconstruction_J = get_joints(reconstruction)
+        pose_J = get_joints(pose.reshape(batch_size*seqlen, -1))
+        reconstruction_J = get_joints(reconstruction.reshape(batch_size*seqlen, -1))
 
         loss_jts = criterion2(pose_J, reconstruction_J)
         # gloss = GradLoss(model, reconstruction, pose)
