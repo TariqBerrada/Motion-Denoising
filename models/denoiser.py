@@ -14,11 +14,11 @@ class Denoiser(torch.nn.Module):
 
         m = (self.seqlen*self.input_dim)//2
 
-        self.mapping1 = torch.nn.Linear(self.seqlen*self.input_dim, m)
-        self.mapping2 = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim - m)
+        self.mapping1 = torch.nn.Linear(self.seqlen*self.input_dim, m, bias = False)
+        self.mapping2 = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim - m, bias = False)
 
-        self.maping1.data /= .2*self.mapping1.data.norm
-        self.mapping2.data /= .2*self.mapping2.data.norm
+        self.mapping1.weight.data /= .2*self.mapping1.weight.data.norm()
+        self.mapping2.weight.data /= .2*self.mapping2.weight.data.norm()
 
 
         self.mapping1.requires_grad = False
