@@ -10,6 +10,9 @@ Denoising of 3D human motion animations by latent space projection.
 - [X] Denoising by Interpolation.
 - [ ] Neural ODEs for denoising.
 
+## Poster
+![Poster](poster.jpg)
+
 ## Current results
 The following is the learning curve, the image to the right is the rendering of the ground truth while the left one is the reconstruction.
 !['left = ground truth, right = reconstruction'](renderings/preds.png)
