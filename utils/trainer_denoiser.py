@@ -3,15 +3,15 @@ import torch, tqdm, os
 from config import device
 from utils.render import get_joints
 
-from train_denoiser import batch_size, seqlen
+# from train_denoiser import batch_size, seqlen
 
 import matplotlib.pyplot as plt
 
 criterion = torch.nn.MSELoss()
 criterion2 = torch.nn.MSELoss()
 
-# batch_size = 256
-# seqlen = 60
+batch_size = 128
+seqlen = 60
 
 def fit(model, loader, optimizer, scheduler):
     model.train()
@@ -37,7 +37,6 @@ def fit(model, loader, optimizer, scheduler):
         
         # loss  = loss + 1000*gloss
         loss = loss_pose + loss_jts
-        print(loss_pose.item(), loss_jts.item())
 
         running_loss += loss.item()
 

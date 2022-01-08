@@ -17,6 +17,10 @@ class Denoiser(torch.nn.Module):
         self.mapping1 = torch.nn.Linear(self.seqlen*self.input_dim, m)
         self.mapping2 = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim - m)
 
+        self.maping1.data /= .2*self.mapping1.data.norm
+        self.mapping2.data /= .2*self.mapping2.data.norm
+
+
         self.mapping1.requires_grad = False
         self.mapping2.requires_grad = False
 

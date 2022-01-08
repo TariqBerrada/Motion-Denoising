@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 epochs = 200
 lr = 1e-2
 train_split = .8
-batch_size = 256
+batch_size = 128
 seqlen=60
 
 data = joblib.load('data/db/database.pt')
@@ -33,7 +33,7 @@ val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size*seqlen, 
 model = Denoiser(input_dim = 63, batch_size = batch_size, hidden_dim = 256, seqlen=60, n_layers= 3).to(device)
 # model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
 
-optimizer = torch.optim.SGD(model.parameters(), lr = lr)
+optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr = lr, momentum=0.9, nesterov=True)
 
 # optimizer = torch.optim.LBFGS(model.parameters(), lr = lr, max_iter = 50, line_search_fn='strong_wolfe')
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5, patience = 40)
