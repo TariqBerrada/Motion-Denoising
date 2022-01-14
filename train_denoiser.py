@@ -18,6 +18,8 @@ batch_size = 128
 seqlen=60
 
 data = joblib.load('data/db/database.pt')
+for k, v in data.items():
+    data[k] = data[k][::5, :]
 
 pose = data['pose']
 trans = data['trans']
