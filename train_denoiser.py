@@ -38,7 +38,7 @@ model = Denoiser(input_dim = 63, batch_size = batch_size, hidden_dim = 256, seql
 optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr = lr, momentum=0.9, nesterov=True)
 
 # optimizer = torch.optim.LBFGS(model.parameters(), lr = lr, max_iter = 50, line_search_fn='strong_wolfe')
-scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5, patience = 40)
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor = .5, patience = 100)
 train_hist, val_hist = train(model, train_loader, val_loader, optimizer, scheduler, epochs)
 
 fig, ax = plt.subplots(1, 2, figsize = (12, 5))

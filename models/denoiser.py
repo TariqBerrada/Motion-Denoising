@@ -12,17 +12,17 @@ class Denoiser(torch.nn.Module):
         self.batch_size = batch_size
         self.seqlen = seqlen
 
-        m = (self.seqlen*self.input_dim)//2
+        # m = (self.seqlen*self.input_dim)//2
 
-        self.mapping1 = torch.nn.Linear(self.seqlen*self.input_dim, m, bias = False)
-        self.mapping2 = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim - m, bias = False)
+        # self.mapping1 = torch.nn.Linear(self.seqlen*self.input_dim, m, bias = False)
+        # self.mapping2 = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim - m, bias = False)
 
-        self.mapping1.weight.data /= .2*self.mapping1.weight.data.norm()
-        self.mapping2.weight.data /= .2*self.mapping2.weight.data.norm()
+        # self.mapping1.weight.data /= .2*self.mapping1.weight.data.norm()
+        # self.mapping2.weight.data /= .2*self.mapping2.weight.data.norm()
 
 
-        self.mapping1.requires_grad = False
-        self.mapping2.requires_grad = False
+        # self.mapping1.requires_grad = False
+        # self.mapping2.requires_grad = False
 
         self.lstm = torch.nn.LSTM(
             input_size = self.input_dim,
@@ -45,19 +45,19 @@ class Denoiser(torch.nn.Module):
         self.state = torch.zeros(2*self.n_layers, self.batch_size, self.hidden_dim, device = model.device) # [D*nlayers, batch_size, hidden_size]
 
 
-        x= x.reshape(x.shape[0], -1)
-        x1 = self.mapping1(x) # add cos and sin mappings
-        x2 = self.mapping2(x)
+        # x= x.reshape(x.shape[0], -1)
+        # x1 = self.mapping1(x) # add cos and sin mappings
+        # x2 = self.mapping2(x)
 
-        xf = torch.cat((x1, x2), dim = -1)
+        # xf = torch.cat((x1, x2), dim = -1)
 
-        xf = xf.reshape(xf.shape[0], self.seqlen, self.input_dim)
-        self.hidden, self.state = self.lstm(xf, (self.hidden, self.state))
+        # xf = xf.reshape(xf.shape[0], self.seqlen, self.input_dim)
+        self.hidden, self.state = self.lstm(x, (self.hidden, self.state))
         
-        x = self.hidden.view(self.hidden.shape[0], -1)
+        x = self.hidden # .view(self.hidden.shape[0], -1)
 
-        # x = x.reshape(x.shape[0], -1)
-        x = F.relu(self.fc1(x))
+        x = x.reshape(x.shape[0], -1)
+        x = F.leaky_relu(self.fc1(x))
         
         x = self.out(x)
         x = x.reshape(x.shape[0], self.seqlen, self.input_dim)
