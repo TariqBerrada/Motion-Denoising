@@ -8,6 +8,7 @@ Denoising of 3D human motion animations by latent space projection.
 - [X] Projection paths analysis.
 - [X] Denoising by gradient descent.
 - [X] Denoising by Interpolation.
+- [ ] Decoder block into denoising Autoencoder.
 - [ ] Neural ODEs for denoising.
 
 ## Poster
