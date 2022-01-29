@@ -32,7 +32,7 @@ val_data = {'pose':pose[sep:, :], 'trans':trans[sep:, :]}
 train_loader = DataLoader(DatasetClass(train_data), batch_size = batch_size*seqlen, num_workers=2, drop_last = True)
 val_loader = DataLoader(DatasetClass(val_data), batch_size = batch_size*seqlen, num_workers=2, drop_last=True)
 
-model = Denoiser(input_dim = 63, batch_size = batch_size, hidden_dim = 256, seqlen=60, n_layers= 3).to(device)
+model = Denoiser(input_dim = 63, batch_size = batch_size, hidden_dim = 256, seqlen=seqlen, n_layers= 3).to(device)
 # model.load_state_dict(torch.load('weights/ckpt.pth', map_location = 'cpu'))
 
 optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr = lr, momentum=0.9, nesterov=True)
