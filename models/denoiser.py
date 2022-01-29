@@ -2,6 +2,8 @@ import torch
 
 import torch.nn.functional as F
 
+from models.model import Network
+
 class Denoiser(torch.nn.Module):
     def __init__(self, input_dim, batch_size, hidden_dim, seqlen, n_layers, bidirectional = True):
         super(Denoiser, self).__init__()
@@ -24,6 +26,9 @@ class Denoiser(torch.nn.Module):
         # self.mapping1.requires_grad = False
         # self.mapping2.requires_grad = False
 
+        self.vae = Network(63, 28)
+        self.vae.load_state_dict(torch.load('weights/ckpt.pth', map_location='cpu'))
+
         self.lstm = torch.nn.LSTM(
             input_size = self.input_dim,
             hidden_size = self.hidden_dim,
@@ -37,6 +42,7 @@ class Denoiser(torch.nn.Module):
 
         self.fc1 = torch.nn.Linear(2*self.seqlen*self.hidden_dim, self.seqlen*self.input_dim) # [batch_size, seqlen, D*hidden_dim]
         self.out = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim) # [batch_size, seqlen, D*hidden_dim]
+        self.out = torch.nn.Linear(self.seqlen*self.input_dim, 28*self.seqlen) # [batch_size, seqlen, D*hidden_dim]
 
     def forward(self, x):
 
@@ -60,9 +66,9 @@ class Denoiser(torch.nn.Module):
         x = F.leaky_relu(self.fc1(x))
         
         x = self.out(x)
-        x = x.reshape(x.shape[0], self.seqlen, self.input_dim)
-
-        return x
+        x = x.reshape(x.shape[0], self.seqlen, 28)
+        rec = self.vae(x)
+        return rec
         
 if __name__ == '__main__':
     model = Denoiser(3, 8, 12, 10, 2)
