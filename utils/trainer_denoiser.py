@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 criterion = torch.nn.MSELoss()
 criterion2 = torch.nn.MSELoss()
 
-batch_size = 128
-seqlen = 60
+batch_size = 32
+seqlen = 200
 
 def fit(model, loader, optimizer, scheduler):
     model.train()

@@ -47,8 +47,8 @@ class Denoiser(torch.nn.Module):
     def forward(self, x):
 
         # Initialize cell and hidden states
-        self.hidden = torch.zeros(2*self.n_layers, self.batch_size, self.hidden_dim, device = model.device) # [D*nlayers, batch_size, hidden_size] D = 2 if bidir else 1
-        self.state = torch.zeros(2*self.n_layers, self.batch_size, self.hidden_dim, device = model.device) # [D*nlayers, batch_size, hidden_size]
+        self.hidden = torch.zeros(2*self.n_layers, self.batch_size, self.hidden_dim, device = 'cuda') # [D*nlayers, batch_size, hidden_size] D = 2 if bidir else 1
+        self.state = torch.zeros(2*self.n_layers, self.batch_size, self.hidden_dim, device = 'cuda') # [D*nlayers, batch_size, hidden_size]
 
 
         # x= x.reshape(x.shape[0], -1)
