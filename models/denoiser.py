@@ -66,9 +66,11 @@ class Denoiser(torch.nn.Module):
         x = F.leaky_relu(self.fc1(x))
         
         x = self.out(x)
-        x = x.reshape(x.shape[0], self.seqlen, 28)
-        rec = self.vae(x)
-        return rec
+        s = x.shape
+        x = x.reshape(-1, 28)
+        x = self.vae.decode(x)
+        x = x.reshape(self.batch_size, self.seqlen, 63)
+        return x
         
 if __name__ == '__main__':
     model = Denoiser(3, 8, 12, 10, 2)

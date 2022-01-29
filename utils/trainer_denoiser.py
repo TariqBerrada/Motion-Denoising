@@ -11,7 +11,7 @@ criterion = torch.nn.MSELoss()
 criterion2 = torch.nn.MSELoss()
 
 batch_size = 32
-seqlen = 200
+seqlen = 60
 
 def fit(model, loader, optimizer, scheduler):
     model.train()

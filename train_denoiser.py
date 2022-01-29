@@ -15,7 +15,7 @@ epochs = 200
 lr = 1e-2
 train_split = .8
 batch_size = 32
-seqlen=200
+seqlen=60
 
 data = joblib.load('data/db/database.pt')
 for k, v in data.items():
