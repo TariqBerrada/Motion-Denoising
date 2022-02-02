@@ -1,5 +1,6 @@
 # Motion-Denoising
-Denoising of 3D human motion animations by latent space projection.
+This is the code for the Motion Denoising project, for the course *Introduction to Deep Learning* for both CentraleSupélec & MVA.\\
+The notebook can be directly launched in colab and presents the results discussed in the article ![here](DLI___report.pdf).
 
 ## To-do :
 - [X] Rendering utilities.
@@ -10,22 +11,10 @@ Denoising of 3D human motion animations by latent space projection.
 - [X] Denoising by Interpolation.
 - [X] Decoder block into denoising Autoencoder.
 - [X] Gradient descent in sinusoidal basis. 
+- [X] Denoiser model with sinsuoidal basis.
 
+## Article
+![link to the article here.](DLI___report.pdf)
 ## Poster
 ![Poster](poster.jpg)
-
-## Current results
-The following is the learning curve, the image to the right is the rendering of the ground truth while the left one is the reconstruction.
-!['left = ground truth, right = reconstruction'](renderings/preds.png)
-
-Learning curves (the total loss, reconstruction part and KL diverence part are all plotted).
-![learning curves](learning.png)
-
-## Phase diagrams and correspondances in 2d t-SNE embedding space (example)
-![](renderings/tsne.png)
-
-## Interpolation profil in 2D t-SNE space (example)
-![](renderings/tsne_interpolation.png)
-
-## Interpolation for denoising
-![](renderings/interpolation.png)
+(was not updated, content might differ from that of the article.)
