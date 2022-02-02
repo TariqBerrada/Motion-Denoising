@@ -1,5 +1,5 @@
 # Motion-Denoising
-This is the code for the Motion Denoising project, for the course *Introduction to Deep Learning* for both CentraleSupélec & MVA.\\
+This is the code for the Motion Denoising project, for the course *Introduction to Deep Learning* for both CentraleSupélec & MVA. \
 The notebook can be directly launched in colab and presents the results discussed in the article ![here](DLI___report.pdf).
 
 ## To-do :
