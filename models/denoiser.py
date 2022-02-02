@@ -1,6 +1,7 @@
 import torch
-
 import torch.nn.functional as F
+
+import numpy as np
 
 from models.model import Network
 
@@ -14,20 +15,11 @@ class Denoiser(torch.nn.Module):
         self.batch_size = batch_size
         self.seqlen = seqlen
 
-        # m = (self.seqlen*self.input_dim)//2
-
-        # self.mapping1 = torch.nn.Linear(self.seqlen*self.input_dim, m, bias = False)
-        # self.mapping2 = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim - m, bias = False)
-
-        # self.mapping1.weight.data /= .2*self.mapping1.weight.data.norm()
-        # self.mapping2.weight.data /= .2*self.mapping2.weight.data.norm()
-
-
-        # self.mapping1.requires_grad = False
-        # self.mapping2.requires_grad = False
-
         self.vae = Network(63, 28)
         self.vae.load_state_dict(torch.load('weights/ckpt.pth', map_location='cpu'))
+
+        for p in self.vae.parameters():
+            p.requires_grad = False
 
         self.lstm = torch.nn.LSTM(
             input_size = self.input_dim,
@@ -35,39 +27,55 @@ class Denoiser(torch.nn.Module):
             num_layers = self.n_layers,
             bidirectional = True,
             batch_first = True
-        ) # input [batch_size, seqlen, nfeatures]
+        )
 
-        # self.hidden = torch.randn(2*self.n_layers, self.batch_size, self.hidden_dim) # [D*nlayers, batch_size, hidden_size] D = 2 if bidir else 1
-        # self.state = torch.randn(2*self.n_layers, self.batch_size, self.hidden_size) # [D*nlayers, batch_size, hidden_size]
+        self.fc1 = torch.nn.Linear(2*self.seqlen*self.hidden_dim, 2*28*self.nh+1) 
+        # self.out = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim) 
+        self.out = torch.nn.Linear(2*28*self.nh+1, 2*28*self.nh+1) 
 
-        self.fc1 = torch.nn.Linear(2*self.seqlen*self.hidden_dim, self.seqlen*self.input_dim) # [batch_size, seqlen, D*hidden_dim]
-        self.out = torch.nn.Linear(self.seqlen*self.input_dim, self.seqlen*self.input_dim) # [batch_size, seqlen, D*hidden_dim]
-        self.out = torch.nn.Linear(self.seqlen*self.input_dim, 28*self.seqlen) # [batch_size, seqlen, D*hidden_dim]
+        device = 'cuda'
 
+        self.nh = 3*28 # number of harmonics
+        self.Fs = 1000 # sampling frequency
+        self.f0 = self.Fs//(4*self.seqlen) # fundamental frequency
+
+        self.nz = 28 # dimension of latent code
+
+        S = np.zeros((self.batch_size, self.nz, self.seqlen, self.nh))
+        for i in range(self.seqlen):
+            for j in range(self.nh):
+                S[:, :, i, j] = 2*np.pi*((i*self.f0)/self.Fs)*j
+
+        # freq has shape 28, seqlen, nh
+        self.freq = torch.tensor(S, device = 'cuda', dtype = torch.float32, requires_grad = False)
+
+    def get_code(self, A, phi):
+        # freq = torch.sin(self.freq.transpose(1, 0) + phi)
+        freq = self.freq.transpose(-2, -1)
+        freq = torch.sin(((freq.T+phi.T).T).transpose(-2, -1)) # calculate the frequencies for each harmonic.
+        code = torch.einsum('bzsh, bzh -> bzs', self.freq, A) # multiply by the amplitudes.
+        return code
+        
     def forward(self, x):
 
         # Initialize cell and hidden states
         self.hidden = torch.zeros(2*self.n_layers, self.batch_size, self.hidden_dim, device = 'cuda') # [D*nlayers, batch_size, hidden_size] D = 2 if bidir else 1
         self.state = torch.zeros(2*self.n_layers, self.batch_size, self.hidden_dim, device = 'cuda') # [D*nlayers, batch_size, hidden_size]
 
-
-        # x= x.reshape(x.shape[0], -1)
-        # x1 = self.mapping1(x) # add cos and sin mappings
-        # x2 = self.mapping2(x)
-
-        # xf = torch.cat((x1, x2), dim = -1)
-
-        # xf = xf.reshape(xf.shape[0], self.seqlen, self.input_dim)
         self.hidden, self.state = self.lstm(x, (self.hidden, self.state))
         
-        x = self.hidden # .view(self.hidden.shape[0], -1)
-
-        x = x.reshape(x.shape[0], -1)
-        x = F.leaky_relu(self.fc1(x))
+        x = self.hidden[:, -1, :] # 32, 60, 512 -> 32, 512 # keep only last hidden state
+        # x = x.reshape(x.shape[0], -1)
+        x = F.elu(self.fc1(x))
         
-        x = self.out(x)
-        s = x.shape
-        x = x.reshape(-1, 28)
+        x = self.out(x) # output phase and amplitude features (batch_size, 2*nh+1)
+        x = x.reshape(x.shape[0], 28, 2*self.nh+1)
+        z = self.get_code(x[:, :, :self.nh], x[:, :, self.nh:2*self.nh]) # didn't add the bias here.
+        print('got code', z.shape)
+
+
+        # s = x.shape
+        # x = x.reshape(-1, 28)
         x = self.vae.decode(x)
         x = x.reshape(self.batch_size, self.seqlen, 63)
         return x
