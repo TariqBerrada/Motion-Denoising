@@ -48,10 +48,18 @@ class Denoiser(torch.nn.Module):
         # freq has shape 28, seqlen, nh
         self.freq = torch.tensor(S, device = 'cuda', dtype = torch.float32, requires_grad = False)
 
-    def get_code(self, A, phi):
+    def get_code(self, A, phi, b, k = 10):
         freq = self.freq.transpose(-2, -1)
+        # Impose sparsness by keep only n frequencies .
+        # A : [b, 28, nh]
+        s = A.shape
+        A = A.reshape(-1, A.shape[-1])
+        shift = torch.topk(A, k=2, dim = -1, sorted = True).values[:, -1]
+        A = F.relu(A - shift) + shift
+        A = A.reshape(s)
+
         freq = torch.sin(((freq.T+phi.T).T).transpose(-2, -1)) # calculate the frequencies for each harmonic.
-        code = torch.einsum('bzsh, bzh -> bzs', self.freq, A) # multiply by the amplitudes.
+        code = torch.einsum('bzsh, bzh -> bzs', self.freq, A) + b # multiply by the amplitudes.
         return code
         
     def forward(self, x):
@@ -68,7 +76,7 @@ class Denoiser(torch.nn.Module):
         x = self.out(x) # output phase and amplitude features (batch_size, 2*nh+1)
         x = x.reshape(x.shape[0], 28, 2*self.nh+1)
         
-        z = self.get_code(x[:, :, :self.nh], x[:, :, self.nh:2*self.nh]) # didn't add the bias here.
+        z = self.get_code(x[:, :, :self.nh], x[:, :, self.nh:2*self.nh], x[:, :, -1]) # didn't add the bias here.
         z = z.reshape(-1, 28)
         x = self.vae.decode(z)
 
