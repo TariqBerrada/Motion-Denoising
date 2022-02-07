@@ -12,7 +12,7 @@ from utils.trainer_denoiser import train
 import matplotlib.pyplot as plt
 
 epochs = 400
-lr = 1e-1
+lr = 1e-5
 train_split = .8
 batch_size = 32
 seqlen=60

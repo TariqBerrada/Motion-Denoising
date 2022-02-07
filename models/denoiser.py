@@ -55,11 +55,14 @@ class Denoiser(torch.nn.Module):
         s = A.shape
         A = A.reshape(-1, A.shape[-1])
         shift = torch.topk(A, k=2, dim = -1, sorted = True).values[:, -1]
-        A = F.relu(A - shift) + shift
+        
+        # print(A.shape, shift.shape, 'tests')
+        A = (F.relu(A.T - shift.T) + shift.T).T
         A = A.reshape(s)
 
         freq = torch.sin(((freq.T+phi.T).T).transpose(-2, -1)) # calculate the frequencies for each harmonic.
-        code = torch.einsum('bzsh, bzh -> bzs', self.freq, A) + b # multiply by the amplitudes.
+        code = torch.einsum('bzsh, bzh -> bzs', self.freq, A) # multiply by the amplitudes.
+        code = (code.T + b.T).T
         return code
         
     def forward(self, x):
