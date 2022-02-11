@@ -14,7 +14,9 @@ The notebook can be directly launched in colab and presents the results discusse
 - [X] Denoiser model with sinsuoidal basis.
 
 ## Article
-![link to the article here.](DLI___report.pdf)
+Link to the article ![here.](DLI___report.pdf)
+## Notebook
+Link to the notebook ![here.](notebook.ipynb)
 ## Poster
 ![Poster](poster.jpg)
 (was not updated, content might differ from that of the article.)
